@@ -10,6 +10,11 @@ terraform {
 provider "docker" {
 }
 
+resource "docker_network" "cicd_network" {
+  name   = "cicd-network"
+  driver = "bridge"
+}
+
 resource "docker_image" "app_image" {
   name         = var.docker_image
   keep_locally = true
@@ -26,7 +31,7 @@ resource "docker_container" "staging" {
   }
 
   networks_advanced {
-    name = "cicd-network"
+    name = docker_network.cicd_network.name
   }
 
   healthcheck {
