@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
-from main import app
+from main import app, REQUEST_COUNT, REQUEST_LATENCY, IN_PROGRESS
+from prometheus_client import REGISTRY
 
 client = TestClient(app)
 
@@ -34,9 +35,14 @@ def test_unknown_route_returns_404():
 
 
 def test_metrics_counters_increment():
+    before_root = REGISTRY.get_sample_value('http_requests_total', {'method': 'GET', 'endpoint': '/'})
+    before_health = REGISTRY.get_sample_value('http_requests_total', {'method': 'GET', 'endpoint': '/health'})
+
     client.get("/")
     client.get("/health")
-    response = client.get("/metrics")
-    content = response.text
-    assert 'http_requests_total{method="GET",endpoint="/"}' in content
-    assert 'http_requests_total{method="GET",endpoint="/health"}' in content
+
+    after_root = REGISTRY.get_sample_value('http_requests_total', {'method': 'GET', 'endpoint': '/'})
+    after_health = REGISTRY.get_sample_value('http_requests_total', {'method': 'GET', 'endpoint': '/health'})
+
+    assert after_root == (before_root or 0) + 1
+    assert after_health == (before_health or 0) + 1
