@@ -7,7 +7,7 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
 
 FROM python:3.11-slim
 
-RUN groupadd -r appuser && useradd -r -g appuser -d /app -s /sbin/nologin appuser && \
+RUN groupadd -r appuser && useradd -r -g appuser -d /home/appuser -s /sbin/nologin appuser && \
     pip install --no-cache-dir --upgrade pip setuptools wheel
 
 WORKDIR /app
