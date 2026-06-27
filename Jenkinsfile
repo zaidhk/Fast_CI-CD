@@ -48,6 +48,7 @@ pipeline {
                     sh """
                         . venv/bin/activate
                         sonar-scanner \
+                            -Dsonar.organization=cicd-org \
                             -Dsonar.projectKey=cicd-api \
                             -Dsonar.sources=app/ \
                             -Dsonar.python.coverage.reportPaths=coverage.xml \
