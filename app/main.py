@@ -24,7 +24,7 @@ async def metrics_middleware(request, call_next):
 
 @app.get("/")
 def read_root():
-    return {"message": "Bienvenue sur l'API DevOps CI/CD", "status": "running"}
+    return {"message": "Bienvenue sur l'API DevOps CI/CD - v1.0.1", "status": "running"}
 
 
 @app.get("/health")
