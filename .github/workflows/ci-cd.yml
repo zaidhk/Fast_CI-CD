@@ -7,7 +7,6 @@ on:
     branches: [main, master]
 
 env:
-  DOCKER_IMAGE: ghcr.io/${{ github.repository_owner }}/cicd-api
   STAGING_PORT: 8081
 
 jobs:
@@ -15,6 +14,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Lowercase owner for Docker
+        run: echo "OWNER_LC=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Stage 1 - Checkout
         uses: actions/checkout@v4
         with:
@@ -79,12 +81,12 @@ jobs:
         with:
           context: .
           load: true
-          tags: ${{ env.DOCKER_IMAGE }}:latest,${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+          tags: ghcr.io/${{ env.OWNER_LC }}/cicd-api:latest,ghcr.io/${{ env.OWNER_LC }}/cicd-api:${{ github.sha }}
 
       - name: Stage 6 - Security Scan (Trivy)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.DOCKER_IMAGE }}:latest
+          image-ref: ghcr.io/${{ env.OWNER_LC }}/cicd-api:latest
           format: table
           exit-code: 1
           severity: HIGH,CRITICAL
@@ -94,7 +96,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.DOCKER_IMAGE }}:latest,${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+          tags: ghcr.io/${{ env.OWNER_LC }}/cicd-api:latest,ghcr.io/${{ env.OWNER_LC }}/cicd-api:${{ github.sha }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -106,7 +108,7 @@ jobs:
           cd infra
           terraform init
           terraform apply -auto-approve \
-            -var="docker_image=${{ env.DOCKER_IMAGE }}:latest" \
+            -var="docker_image=ghcr.io/${{ env.OWNER_LC }}/cicd-api:latest" \
             -var="staging_port=${{ env.STAGING_PORT }}"
 
       - name: Stage 9 - Smoke Test
@@ -120,5 +122,5 @@ jobs:
         run: |
           cd infra
           terraform destroy -auto-approve \
-            -var="docker_image=${{ env.DOCKER_IMAGE }}:latest" \
+            -var="docker_image=ghcr.io/${{ env.OWNER_LC }}/cicd-api:latest" \
             -var="staging_port=${{ env.STAGING_PORT }}"
