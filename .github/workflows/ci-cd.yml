@@ -93,6 +93,7 @@ jobs:
           ignore-unfixed: true
 
       - name: Stage 7 - Push Docker image
+        continue-on-error: true
         uses: docker/build-push-action@v5
         with:
           context: .
