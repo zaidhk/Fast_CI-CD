@@ -48,8 +48,8 @@ pipeline {
                     sh """
                         . venv/bin/activate
                         sonar-scanner \
-                            -Dsonar.organization=cicd-org \
-                            -Dsonar.projectKey=cicd-api \
+                            -Dsonar.organization=l-sbiksla-l \
+                            -Dsonar.projectKey=l-SBIKSLA-l_Fast_CI-CD \
                             -Dsonar.sources=app/ \
                             -Dsonar.python.coverage.reportPaths=coverage.xml \
                             -Dsonar.host.url=${SONAR_HOST_URL} \

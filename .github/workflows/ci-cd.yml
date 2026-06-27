@@ -45,19 +45,17 @@ jobs:
           path: coverage.xml
 
       - name: Stage 4 - SonarQube Scan
-        continue-on-error: true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         with:
           args: >
-            -Dsonar.organization=${{ github.repository_owner }}
-            -Dsonar.projectKey=${{ github.repository_owner }}_cicd-api
+            -Dsonar.organization=l-sbiksla-l
+            -Dsonar.projectKey=l-SBIKSLA-l_Fast_CI-CD
             -Dsonar.sources=app/
             -Dsonar.python.coverage.reportPaths=coverage.xml
 
       - name: Stage 5 - Quality Gate
-        continue-on-error: true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         uses: SonarSource/sonarqube-quality-gate-action@v1.1.0
